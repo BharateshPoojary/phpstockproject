@@ -7,52 +7,83 @@
   <title>Matdash Free</title>
   <link rel="shortcut icon" type="image/png" href="./assets/images/logos/favicon.png" />
   <link rel="stylesheet" href="./assets/css/styles.min.css" />
+  <style>
+    .container {
+      display: none;
+    }
+    .alert{
+      display:none;
+    }
+  </style>
 </head>
 
 <body>
   <script>
-    const handleSubmit = async (event)=>{ 
+    const handleSubmit = async (event) => {
       event.preventDefault();
       const mobileNo = document.getElementById("mobileNo").value;
       const password = document.getElementById("password").value;
-      const formData = {mobileNo,password};
+      const formData = { mobileNo, password };
       // console.log(formData);
+      const showmessage = document.getElementById('usernamevalidationmessage');
+      showmessage.style.color = "red";
       const convertedtonumData = Number(mobileNo);
-      if(isNaN(convertedtonumData)){
+      if (isNaN(convertedtonumData)) {
+        showmessage.textContent = "Please enter a valid number";
         console.log("Please enter a valid number");
         return;
-      }
-      if(mobileNo.length > 10 || mobileNo.length < 10 ){
+      }else if(mobileNo.length > 10 || mobileNo.length < 10) {
+        showmessage.textContent = "Mobile number must be of  10 digit";
         console.log("Mobile number must be of  10 digit");
         return;
+      }else{
+        showmessage.style.display="none";
       }
       try {
-        const postresponse = await axios.post("http://stock.swiftmore.in/mobileApis/userLogin.php",formData,{
+        const postresponse = await axios.post("http://stock.swiftmore.in/mobileApis/userLogin.php", formData, {
           headers: {
             'Content-Type': 'application/x-www-form-urlencoded', // Ensuring it's form data
           }
         });
         console.log(postresponse.data);
-        const {userName,mobileNo,success} = postresponse.data;
-        if(success){
-          localStorage.setItem("userCreds",JSON.stringify({userName , mobileNo}));
+        const { userName, mobileNo, success } = postresponse.data;
+        if (success == "1") {
+          localStorage.setItem("userCreds", JSON.stringify({ userName, mobileNo }));
           window.location.replace("/PHPDASHBOARD/dashboard.php");
+        } else if (success == "2") {
+          const alert_content = document.querySelector('.alert');
+          alert_content.textContent = postresponse.data.message;
+          alert_content.style.display = "block";
+          const alert_section = document.querySelector('.container');
+          alert_section.style.display = "block";
+          return;
         }else{
-          console.log("User is not authenticated");
+          const alert_content = document.querySelector('.alert');
+          alert_content.textContent = postresponse.data.message;
+          alert_content.style.display = "block";
+          const alert_section = document.querySelector('.container');
+          alert_section.style.display = "block";
+          return;
         }
       } catch (error) {
-        console.error("Error posting form data",error.response?.data || error.message);
+        console.error("Error posting form data", error.response?.data || error.message);
       }
     }
+
   </script>
   <!--  Body Wrapper -->
   <div class="page-wrapper" id="main-wrapper" data-layout="vertical" data-navbarbg="skin6" data-sidebartype="full"
     data-sidebar-position="fixed" data-header-position="fixed">
     <div
       class="position-relative overflow-hidden text-bg-light min-vh-100 d-flex align-items-center justify-content-center">
-      <div class="d-flex align-items-center justify-content-center w-100">
+      <div class="flex-col align-items-between justify-content-center w-100">
+       
         <div class="row justify-content-center w-100">
+     
           <div class="col-md-8 col-lg-6 col-xxl-3">
+            <div class="container d-flex justify-content-center" >
+              <div class="alert alert-danger" role="alert"></div>
+            </div>
             <div class="card mb-0">
               <div class="card-body">
                 <a href="/PHPDASHBOARD/dashboard.php" class="text-nowrap logo-img text-center d-block py-3 w-100">
@@ -62,16 +93,18 @@
                 <form onSubmit="handleSubmit(event)" method="post">
                   <div class="mb-3">
                     <label for="MobileNo" class="form-label">Mobile No</label>
-                    <input type="text" class="form-control" id="mobileNo" name="mobileNo" aria-describedby="emailHelp">
+                    <input type="text" class="form-control" id="mobileNo" name="mobileNo" aria-describedby="emailHelp"
+                      required>
+                    <p id="usernamevalidationmessage"></p>
                   </div>
                   <div class="mb-4">
                     <label for="password" class="form-label">Password</label>
-                    <input type="password" class="form-control" id="password" name="password">
+                    <input type="password" class="form-control" id="password" name="password" required>
                   </div>
                   <div class="d-flex align-items-center justify-content-between mb-4">
                     <a class="text-primary fw-bold" href="/PHPDASHBOARD/dashboard.php">Forgot Password ?</a>
                   </div>
-                  <input type="submit"  class="btn btn-primary w-100 py-8 fs-4 mb-4 rounded-2" value="Sign In">
+                  <input type="submit" class="btn btn-primary w-100 py-8 fs-4 mb-4 rounded-2" value="Sign In">
                   <div class="d-flex align-items-center justify-content-center">
                     <p class="fs-4 mb-0 fw-bold">New to Matdash?</p>
                     <a class="text-primary fw-bold ms-2" href="/PHPDASHBOARD/register.php">Create an account</a>
