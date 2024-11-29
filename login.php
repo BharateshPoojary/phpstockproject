@@ -36,8 +36,6 @@
         showmessage.textContent = "Mobile number must be of  10 digit";
         console.log("Mobile number must be of  10 digit");
         return;
-      }else{
-        showmessage.style.display="none";
       }
       try {
         const postresponse = await axios.post("http://stock.swiftmore.in/mobileApis/userLogin.php", formData, {
@@ -56,14 +54,12 @@
           alert_content.style.display = "block";
           const alert_section = document.querySelector('.container');
           alert_section.style.display = "block";
-          return;
         }else{
           const alert_content = document.querySelector('.alert');
           alert_content.textContent = postresponse.data.message;
           alert_content.style.display = "block";
           const alert_section = document.querySelector('.container');
           alert_section.style.display = "block";
-          return;
         }
       } catch (error) {
         console.error("Error posting form data", error.response?.data || error.message);
