@@ -26,9 +26,18 @@
           <li>
             <span class="sidebar-divider lg"></span>
           </li>
+      
+ 
+          
           <li class="nav-small-cap">
             <iconify-icon icon="solar:menu-dots-linear" class="nav-small-cap-icon fs-4"></iconify-icon>
             <span class="hide-menu">UI COMPONENTS</span>
+          </li>
+          <li class="sidebar-item">
+            <a class="sidebar-link" href="/PHPDASHBOARD/category.php" aria-expanded="false">
+              <iconify-icon icon="solar:passport-minimalistic-outline"></iconify-icon>
+              <span class="hide-menu">Categories</span>
+            </a>
           </li>
           <li class="sidebar-item">
             <a class="sidebar-link" href="/PHPDASHBOARD/button.php" aria-expanded="false">
