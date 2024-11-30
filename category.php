@@ -1,8 +1,15 @@
 <?php include "db_Connect.php"
-
+$response['Cat']=array();
 $select_category="SELECT * FROM mstcategory WHERE isVisible='Y'";
 $select_category_result = sqlsrv_query($conn,$select_category);
-
+if (sqlsrv_has_rows($select_category_result)==true) {
+    while ($row = sqlsrv_fetch_array($select_category_result,SQLSRV_FETCH_BOTH)) {
+        $Cat['catId']=$row['catId'];
+        $Cat['catName']=$row['catName'];
+        $Cat['addedOn']=$row['addedOn'];
+        $Cat['catImg']=$row['catImg'];
+    }
+}
 
 
 ?>
