@@ -1,0 +1,9 @@
+// <?php if (!empty($Cat['catImg'])) { ?>
+//     <img src="<?= $Cat['catImg'] ?>"
+//         style="height: 150px; width: 3.5cm;" alt="..."
+//         id="img_url1<?= $Cat['catId'] ?>">
+// <?php } else { ?>
+//     <img style="height: 150px; width: 3.5cm; display:none"
+//         id="img_url1<?= $Cat['catId'] ?>" />
+// <?php } ?>
+?>
