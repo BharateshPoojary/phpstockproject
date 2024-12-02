@@ -41,10 +41,10 @@
                                     <div class="text-center mt-2 mb-4">
                                         Create Category
                                     </div>
-                                    <form action="http://stock.swiftmore.in/mobileApis/TestCURD_category.php"
+                                    <form id="createform" onSubmit="handleFormSubmit(event)"
                                         method="post" enctype="multipart/form-data" class="ps-3 pr-3">
                                         <!-- create modal -->
-                                        <input type="text" name="action" value="create" hidden>
+                                        <input type="text" id="action" name="action" value="create" hidden>
                                         <!-- create modal -->
                                         <div class="row">
                                             <div class="col-12">
@@ -84,6 +84,28 @@
                                             </button>
                                         </div>
                                     </form>
+                                    <script>
+                                     const handleFormSubmit=async (e)=>{
+                                        try {
+                                            e.preventDefault();
+                                            const formData = new FormData();//It is optional but recommended when including files in a request 
+                                            //When dealing with file uploads (<input type="file">), you cannot directly store the file in a plain JavaScript object. The .files property of a file input is a File object, which needs to be properly encoded for transmission. FormData handles this encoding for you.
+                                            const a = document.getElementById('inputGroupFile01').files[0];
+                                            console.log(a);
+                                            formData.append('catName', document.getElementById('catinput').value);
+                                            formData.append('catImg', document.getElementById('inputGroupFile01').files[0]); // Actual file
+                                            formData.append('action', document.getElementById('action').value);
+                                            const postResponse =await axios.post("http://stock.swiftmore.in/mobileApis/TestCURD_category.php",formData
+                                            );
+                                            if(postResponse.data){
+                                                console.log(postResponse.data);
+                                                location.reload();
+                                            }
+                                        } catch (error) {
+                                            console.error("Error fetching data", error.response?.data || error.message);
+                                        }
+                                     }
+                                    </script>
                                 </div>
                             </div>
                         </div>
@@ -93,7 +115,7 @@
                         const fetchData = async () => {
                             try {
                                 const response = await axios.get('http://stock.swiftmore.in/mobileApis/TestCURD_category.php');
-                                console.log(response);
+                                // console.log(response.data);
                                 const rowcontainer = document.getElementById('categories');
                                 const { Cat } = response.data;
                                 Cat.forEach(cat => {
@@ -202,6 +224,7 @@
         </div>
     </div>
     <script>
+
         const showImage = (imginputelement, imgElementid,hideimgId=0) => {
             // console.log(imginputelement.files);
             //imginputelement.files .files is required to get the img information in object
