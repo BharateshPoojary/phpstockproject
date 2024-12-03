@@ -41,8 +41,8 @@
                                     <div class="text-center mt-2 mb-4">
                                         Create Category
                                     </div>
-                                    <form id="createform" onSubmit="handleFormSubmit(event)"
-                                        method="post" enctype="multipart/form-data" class="ps-3 pr-3">
+                                    <form id="createform" onSubmit="handleFormSubmit(event)" method="post"
+                                        enctype="multipart/form-data" class="ps-3 pr-3">
                                         <!-- create modal -->
                                         <input type="text" id="action" name="action" value="create" hidden>
                                         <!-- create modal -->
@@ -85,26 +85,26 @@
                                         </div>
                                     </form>
                                     <script>
-                                     const handleFormSubmit=async (e)=>{
-                                        try {
-                                            e.preventDefault();
-                                            const formData = new FormData();//It is optional but recommended when including files in a request 
-                                            //When dealing with file uploads (<input type="file">), you cannot directly store the file in a plain JavaScript object. The .files property of a file input is a File object, which needs to be properly encoded for transmission. FormData handles this encoding for you.
-                                            const a = document.getElementById('inputGroupFile01').files[0];
-                                            console.log(a);
-                                            formData.append('catName', document.getElementById('catinput').value);
-                                            formData.append('catImg', document.getElementById('inputGroupFile01').files[0]); // Actual file
-                                            formData.append('action', document.getElementById('action').value);
-                                            const postResponse =await axios.post("http://stock.swiftmore.in/mobileApis/TestCURD_category.php",formData
-                                            );
-                                            if(postResponse.data){
-                                                console.log(postResponse.data);
-                                                location.reload();
+                                        const handleFormSubmit = async (e) => {
+                                            try {
+                                                e.preventDefault();
+                                                const formData = new FormData();//It is optional but recommended when including files in a request 
+                                                //When dealing with file uploads (<input type="file">), you cannot directly store the file in a plain JavaScript object. The .files property of a file input is a File object, which needs to be properly encoded for transmission. FormData handles this encoding for you.
+                                                const a = document.getElementById('inputGroupFile01').files[0];
+                                                console.log(a);
+                                                formData.append('catName', document.getElementById('catinput').value);
+                                                formData.append('catImg', document.getElementById('inputGroupFile01').files[0]); // Actual file
+                                                formData.append('action', document.getElementById('action').value);
+                                                const addPostResponse = await axios.post("http://stock.swiftmore.in/mobileApis/TestCURD_category.php", formData
+                                                );
+                                                if (addPostResponse.data) {
+                                                    console.log(addPostResponse.data);
+                                                    location.reload();
+                                                }
+                                            } catch (error) {
+                                                console.error("Error fetching data", error.response?.data || error.message);
                                             }
-                                        } catch (error) {
-                                            console.error("Error fetching data", error.response?.data || error.message);
                                         }
-                                     }
                                     </script>
                                 </div>
                             </div>
@@ -162,15 +162,15 @@
                                                                             <div class="text-center mt-2 mb-4">
                                                                                 Edit Category
                                                                             </div>
-                                                                            <form action="http://stock.swiftmore.in/mobileApis/TestCURD_category.php" method="post" enctype="multipart/form-data"
+                                                                            <form id="editform" onSubmit="handleFormEdit(event,${cat.catId})" method="post" enctype="multipart/form-data"
                                                                                 class="ps-3 pr-3">
-                                                                                <input type="text" name="action" value="update" hidden>
-                                                                                <input type="text" name="catId" value="${cat.catId}" hidden>
+                                                                                <input type="text" name="action" id="editaction" value="update" hidden>
+                                                                                <input type="text"  id="editcatId${cat.catId}" name="catId" value="${cat.catId}" hidden>
                                                                                 <div class="row">
                                                                                     <div class="col-12">
                                                                                         <div class="mb-3">
                                                                                             <label for="inputcom" class="form-label">Name</label>
-                                                                                            <input type="text" class="form-control" id="inputcom"
+                                                                                            <input type="text" class="form-control" id="editinputcom${cat.catId}"
                                                                                                 placeholder="Category Here" name="catName"
                                                                                                 value="${cat.catName}">
                                                                                         </div>
@@ -184,7 +184,7 @@
                                                                                                 </div>
                                                                                                 <div class="custom-file">
                                                                                                     <input type="file" class="form-control"
-                                                                                                        id="inputGroupFile01" 
+                                                                                                        id="editinputGroupFile01${cat.catId}" 
                                                                                                         accept=".png, .jpg,.jpeg,image/*" name="catImg"
                                                                                                         onchange="showImage(this, 'edit_img_url${cat.catId}',${cat.catId});">
                                                                                                 </div>
@@ -211,13 +211,38 @@
                                                                         </div>
                                                                     </div>
                                                                 </div>
-                                                            </div>`                            
+                                                            </div>`
                                 });
+                                
                             } catch (error) {
                                 console.error("Error fetching data", error.response?.data || error.message);
                             }
                         }
                         fetchData();
+                        const handleFormEdit = async (e,catId) => {//during update we have to pass some thing unique so that the function will get to know 
+                            //specifcally which form to update 
+                                    try {
+                                        e.preventDefault();
+                                        const formData = new FormData();//It is optional but recommended when including files in a request 
+                                        //When dealing with file uploads (<input type="file">), you cannot directly store the file in a plain JavaScript object. The .files property of a file input is a File object, which needs to be properly encoded for transmission. FormData handles this encoding for you.
+                                        const a = document.getElementById(`editinputGroupFile01${catId}`).files[0];
+                                        console.log(a);
+                                        formData.append('catName', document.getElementById(`editinputcom${catId}`).value);
+                                        const name = document.getElementById(`editinputcom${catId}`).value;
+                                        console.log(name);
+                                        formData.append('catImg', document.getElementById(`editinputGroupFile01${catId}`).files[0]); // Actual file
+                                        formData.append('action', document.getElementById('editaction').value);
+                                        formData.append('catId', document.getElementById(`editcatId${catId}`).value);
+                                        const editPostResponse = await axios.post("http://stock.swiftmore.in/mobileApis/TestCURD_category.php", formData
+                                        );
+                                        if (editPostResponse.data) {
+                                            console.log(editPostResponse.data);
+                                            location.reload();
+                                        }
+                                    } catch (error) {
+                                        console.error("Error fetching data", error.response?.data || error.message);
+                                    }
+                                }
                     </script>
                 </div>
             </div>
@@ -225,10 +250,10 @@
     </div>
     <script>
 
-        const showImage = (imginputelement, imgElementid,hideimgId=0) => {
+        const showImage = (imginputelement, imgElementid, hideimgId = 0) => {
             // console.log(imginputelement.files);
             //imginputelement.files .files is required to get the img information in object
-         
+
             const imgUrl = document.getElementById(imgElementid);
             if (imginputelement.files && imginputelement.files[0]) {
                 const filereader = new FileReader();
@@ -241,9 +266,9 @@
             } else {
                 imgUrl.style.display = "none";
             }
-            if(hideimgId != 0){
+            if (hideimgId != 0) {
                 const hideImage = document.getElementById(`hideimage${hideimgId}`);
-                hideImage.style.display="none";
+                hideImage.style.display = "none";
             }
         }
     </script>
