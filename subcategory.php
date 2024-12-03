@@ -22,11 +22,11 @@
                         <div class="row align-items-center">
                             <div class="col-12">
                                 <div class="d-sm-flex align-items-center justify-content-between">
-                                    <h4 class="mb-4 mb-sm-0 card-title">Category</h4>
+                                    <h4 class="mb-4 mb-sm-0 card-title">Sub Category</h4>
                                     <button type="button" class="btn bg-primary-subtle text-primary"
                                         data-bs-toggle="modal" data-bs-target="#create">
                                         <span class="fs-4 me-1">+</span>
-                                        Add New Category
+                                        Add New Sub Category
                                     </button>
                                 </div>
                             </div>
@@ -48,8 +48,17 @@
                                             <div class="col-12">
                                                 <div class="mb-3">
                                                     <label for="inputcom" class="form-label">Name</label>
-                                                    <input type="text" class="form-control" id="catinput"
-                                                        placeholder="Category Here" name="catName">
+                                                    <input type="text" class="form-control" id="subcatinput"
+                                                        placeholder="Category Here" name="subCatName">
+                                                </div>
+                                            </div>
+                                            <div class="col-12">
+                                                <div class="mb-3">
+                                                    <label for="inputcom" class="form-label">Growth
+                                                        Percentage (In %)</label>
+                                                    <input type="text" class="form-control" id="growthPercentage"
+                                                        placeholder="Percentage Here" name="growthPercentage"
+                                                        oninput="this.value = this.value.match(/^\d*\.?\d*/)[0]">
                                                 </div>
                                             </div>
                                             <div class="col-6">
@@ -62,7 +71,7 @@
                                                         <div class="custom-file">
                                                             <input type="file" class="form-control"
                                                                 id="inputGroupFile01" accept=".png, .jpg,.jpeg,image/*"
-                                                                name="catImg" onchange="showImage(this, 'img_url');">
+                                                                name="subCatImg" onchange="showImage(this, 'img_url');">
                                                         </div>
                                                     </div>
                                                 </div>
@@ -86,14 +95,18 @@
                                         const handleFormSubmit = async (e) => {
                                             try {
                                                 e.preventDefault();
+                                                const data = JSON.parse(localStorage.getItem('catId'));
+                                                console.log(data.catId);
                                                 const formData = new FormData();//It is optional but recommended when including files in a request 
                                                 //When dealing with file uploads (<input type="file">), you cannot directly store the file in a plain JavaScript object. The .files property of a file input is a File object, which needs to be properly encoded for transmission. FormData handles this encoding for you.
                                                 const a = document.getElementById('inputGroupFile01').files[0];
                                                 console.log(a);
-                                                formData.append('catName', document.getElementById('catinput').value);
-                                                formData.append('catImg', document.getElementById('inputGroupFile01').files[0]); // Actual file
-                                                formData.append('action', document.getElementById('action').value);
-                                                const addPostResponse = await axios.post("http://stock.swiftmore.in/mobileApis/TestCURD_category.php", formData
+                                                formData.append('catId',data.catId);
+                                                formData.append('subCatName', document.getElementById('subcatinput').value);
+                                                formData.append('subCatImg', document.getElementById('inputGroupFile01').files[0]); // Actual file
+                                                formData.append('growthPercentage', document.getElementById('growthPercentage').value);
+                                                formData.append('action','create');
+                                                const addPostResponse = await axios.post("http://stock.swiftmore.in/mobileApis/TestCURD_subcategory.php", formData
                                                 );
                                                 if (addPostResponse.data) {
                                                     console.log(addPostResponse.data);
@@ -108,22 +121,27 @@
                             </div>
                         </div>
                     </div>
-                    <div class="row" id="categories"> </div>
+                    <div class="row" id="subcategories"> </div>
                     <script>
                         const fetchData = async () => {
                             try {
-                                const response = await axios.get('http://stock.swiftmore.in/mobileApis/TestCURD_category.php');
+                                const data = JSON.parse(localStorage.getItem('catId'));
+                                const response = await axios.get(`http://stock.swiftmore.in/mobileApis/TestCURD_subcategory.php?catId=${data.catId}`);
                                 // console.log(response.data);
-                                const rowcontainer = document.getElementById('categories');
-                                const { Cat } = response.data;
-                                Cat.forEach(cat => {
+                                const rowcontainer = document.getElementById('subcategories');
+                                const { subCat } = response.data;
+                                const subCats = subCat;
+                                // console.log(subCats);
+                                try {
+                            
+                                subCats.forEach(subcat => {
                                     //here we have to give += if given equal to it will iterate and will show only last card if given += it will append all the cards inside row container
-                                    rowcontainer.innerHTML += `<div class="col-md-6 col-lg-3 delete${cat.catId}">
+                                    rowcontainer.innerHTML += `<div class="col-md-6 col-lg-3 delete${subcat.subCatId}">
                                                                 <div class="card">
                                                                     <div class="card-body">
                                                                         <div class="d-flex align-items-start">
-                                                                            <div class="bg-warning-subtle text-warning d-inline-block px-4 py-3 rounded " onClick="redirectToSubForm(${cat.catId})">
-                                                                                <img src="${cat.catImg}" class="rounded img-fluid">
+                                                                            <div class="bg-warning-subtle text-warning d-inline-block px-4 py-3 rounded " >
+                                                                                <img src="${subcat.subCatImg}" class="rounded img-fluid">
                                                                             </div>
                                                                             <div class="ms-auto">
                                                                                 <div class="dropdown dropstart">
@@ -136,40 +154,41 @@
                                                                                         <li>
                                                                                             <a  class="dropdown-item" href="javascript:void(0)"
                                                                                                 data-bs-toggle="modal"
-                                                                                                data-bs-target="#view${cat.catId}">Edit</a>
+                                                                                                data-bs-target="#view${subcat.subCatId}">Edit</a>
                                                                                         </li>
                                                                                         <li>
                                                                                             <a class="dropdown-item sa-confirm" href="javascript:void(0)"
-                                                                                                onClick="handleDelete('${cat.catId}','${cat.catName}')">Delete</a>
+                                                                                                onClick="handleDelete('${subcat.subCatId}','${subcat.subCatName}')">Delete</a>
                                                                                         </li>
                                                                                     </ul>
                                                                                 </div>
                                                                             </div>
                                                                         </div>
                                                                         <div class="mt-5">
-                                                                            <h4 class="card-title">${cat.catName}</h4>
+                                                                            <h4 class="card-title">${subcat.subCatName}</h4>
+                                                                            <h6 class="text-muted">${subcat.growthPercentage} %</h6>
                                                                         </div>
                                                                     </div>
                                                                 </div>
                                                             </div>
-                                                            <div id="view${cat.catId}" class="modal fade" tabindex="-1" aria-modal="true" role="dialog">
+                                                            <div id="view${subcat.subCatId}" class="modal fade" tabindex="-1" aria-modal="true" role="dialog">
                                                                 <div class="modal-dialog modal-dialog-scrollable modal-lg">
                                                                     <div class="modal-content">
                                                                         <div class="modal-body">
                                                                             <div class="text-center mt-2 mb-4">
                                                                                 Edit Category
                                                                             </div>
-                                                                            <form id="editform" onSubmit="handleFormEdit(event,${cat.catId})" method="post" enctype="multipart/form-data"
+                                                                            <form id="editform" onSubmit="handleFormEdit(event,${subcat.subCatId})" method="post" enctype="multipart/form-data"
                                                                                 class="ps-3 pr-3">
                                                                                 <input type="text" name="action" id="editaction" value="update" hidden>
-                                                                                <input type="text"  id="editcatId${cat.catId}" name="catId" value="${cat.catId}" hidden>
+                                                                                <input type="text"  id="editcatId${subcat.subCatId}" name="catId" value="${subcat.subCatId}" hidden>
                                                                                 <div class="row">
                                                                                     <div class="col-12">
                                                                                         <div class="mb-3">
                                                                                             <label for="inputcom" class="form-label">Name</label>
-                                                                                            <input type="text" class="form-control" id="editinputcom${cat.catId}"
+                                                                                            <input type="text" class="form-control" id="editinputcom${subcat.subCatId}"
                                                                                                 placeholder="Category Here" name="catName"
-                                                                                                value="${cat.catName}">
+                                                                                                value="${subcat.subCatName}">
                                                                                         </div>
                                                                                     </div>
                                                                                     <div class="col-6">
@@ -181,9 +200,9 @@
                                                                                                 </div>
                                                                                                 <div class="custom-file">
                                                                                                     <input type="file" class="form-control"
-                                                                                                        id="editinputGroupFile01${cat.catId}" 
+                                                                                                        id="editinputGroupFile01${subcat.subCatId}" 
                                                                                                         accept=".png, .jpg,.jpeg,image/*" name="catImg"
-                                                                                                        onchange="showImage(this, 'edit_img_url${cat.catId}',${cat.catId});">
+                                                                                                        onchange="showImage(this, 'edit_img_url${subcat.subCatId}',${subcat.subCatId});">
                                                                                                 </div>
                                                                                             </div>
                                                                                         </div>
@@ -192,8 +211,8 @@
                                                                                         <div class="mb-3">
                                                                                             <div class="mb-3 d-flex justify-content-center">
                                                                                                 <div class="mb-3 d-flex justify-content-center">
-                                                                                                    <img style="height: 150px; width: 3.5cm; display:none;" id="edit_img_url${cat.catId}"  />
-                                                                                                    <img style="height: 150px; width: 3.5cm; display:block;" src="${cat.catImg}" id="hideimage${cat.catId}" />
+                                                                                                    <img style="height: 150px; width: 3.5cm; display:none;" id="edit_img_url${subcat.subCatId}"  />
+                                                                                                    <img style="height: 150px; width: 3.5cm; display:block;" src="${subcat.subCatImg}" id="hideimage${subcat.subCatId}" />
                                                                                                 </div>
                                                                                             </div>
                                                                                         </div>
@@ -209,7 +228,13 @@
                                                                     </div>
                                                                 </div>
                                                             </div>`
-                                });   
+                                });  
+                                        
+                            } catch (error) {
+                                const addcategories = document.getElementById('subcategories');
+                                addcategories.innerHTML=`<h1 class="fw-10 fs-7 text-center">No sub categories added</h1>`;
+                            
+                                } 
                             } catch (error) {
                                 console.error("Error fetching data", error.response?.data || error.message);
                             }
