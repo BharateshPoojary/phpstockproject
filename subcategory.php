@@ -95,13 +95,13 @@
                                         const handleFormSubmit = async (e) => {
                                             try {
                                                 e.preventDefault();
-                                                const data = JSON.parse(localStorage.getItem('catId'));
-                                                console.log(data.catId);
+                                                const data = JSON.parse(localStorage.getItem('subcatid'));
+                                                console.log(data.subcatid);
                                                 const formData = new FormData();//It is optional but recommended when including files in a request 
                                                 //When dealing with file uploads (<input type="file">), you cannot directly store the file in a plain JavaScript object. The .files property of a file input is a File object, which needs to be properly encoded for transmission. FormData handles this encoding for you.
                                                 const a = document.getElementById('inputGroupFile01').files[0];
                                                 console.log(a);
-                                                formData.append('catId',data.catId);
+                                                formData.append('subcatid',data.subcatid);
                                                 formData.append('subCatName', document.getElementById('subcatinput').value);
                                                 formData.append('subCatImg', document.getElementById('inputGroupFile01').files[0]); // Actual file
                                                 formData.append('growthPercentage', document.getElementById('growthPercentage').value);
@@ -127,13 +127,12 @@
                             try {
                                 const data = JSON.parse(localStorage.getItem('catId'));
                                 const response = await axios.get(`http://stock.swiftmore.in/mobileApis/TestCURD_subcategory.php?catId=${data.catId}`);
-                                // console.log(response.data);
+                                console.log(response.data);
                                 const rowcontainer = document.getElementById('subcategories');
                                 const { subCat } = response.data;
                                 const subCats = subCat;
                                 // console.log(subCats);
                                 try {
-                            
                                 subCats.forEach(subcat => {
                                     //here we have to give += if given equal to it will iterate and will show only last card if given += it will append all the cards inside row container
                                     rowcontainer.innerHTML += `<div class="col-md-6 col-lg-3 delete${subcat.subCatId}">
@@ -181,7 +180,7 @@
                                                                             <form id="editform" onSubmit="handleFormEdit(event,${subcat.subCatId})" method="post" enctype="multipart/form-data"
                                                                                 class="ps-3 pr-3">
                                                                                 <input type="text" name="action" id="editaction" value="update" hidden>
-                                                                                <input type="text"  id="editcatId${subcat.subCatId}" name="catId" value="${subcat.subCatId}" hidden>
+                                                                                <input type="text"  id="editsubcatid${subcat.subCatId}" name="subcatid" value="${subcat.subCatId}" hidden>
                                                                                 <div class="row">
                                                                                     <div class="col-12">
                                                                                         <div class="mb-3">
@@ -189,6 +188,16 @@
                                                                                             <input type="text" class="form-control" id="editinputcom${subcat.subCatId}"
                                                                                                 placeholder="Category Here" name="catName"
                                                                                                 value="${subcat.subCatName}">
+                                                                                        </div>
+                                                                                    </div>
+                                                                                    <div class="col-12">
+                                                                                        <div class="mb-3">
+                                                                                            <label for="inputcom" class="form-label">Growth
+                                                                                                Percentage (In %)</label>
+                                                                                            <input type="text" class="form-control" id="editpercentinputcom${subcat.subCatId}"
+                                                                                                placeholder="Percentage Here" name="growthPercentage"
+                                                                                                value="${subcat.growthPercentage}" oninput="handleInput(${subcat.subCatId})""
+                                                                                                >
                                                                                         </div>
                                                                                     </div>
                                                                                     <div class="col-6">
@@ -231,34 +240,46 @@
                                 });  
                                         
                             } catch (error) {
-                                const addcategories = document.getElementById('subcategories');
-                                addcategories.innerHTML=`<h1 class="fw-10 fs-7 text-center">No sub categories added</h1>`;
-                            
+                                const addsubcategories = document.getElementById('subcategories');
+                                addsubcategories.innerHTML=`<h1 class="fw-10 fs-7 text-center">No sub categories added</h1>`;
                                 } 
                             } catch (error) {
                                 console.error("Error fetching data", error.response?.data || error.message);
                             }
                         }
                         fetchData();
-                        const handleFormEdit = async (e,catId) => {//during update we have to pass some thing unique so that the function will get to know 
+                        const handleInput=(subcatid)=>{
+                            const inputElement = document.getElementById(`editpercentinputcom${subcatid}`);
+                            inputElement.addEventListener('input', (event) => {
+                            const value = event.target.value.match(/^\d*\.?\d*/)[0];
+                            event.target.value = value;//input value must follow  the required rule
+                        
+                        });
+                      }
+                       
+                        const handleFormEdit = async (e,subcatid) => {//during update we have to pass some thing unique so that the function will get to know 
                             //specifcally which form to update 
                                     try {
+                                        console.log(subcatid);
                                         e.preventDefault();
+                                        const data = JSON.parse(localStorage.getItem('catId'));
                                         const formData = new FormData();//It is optional but recommended when including files in a request 
                                         //When dealing with file uploads (<input type="file">), you cannot directly store the file in a plain JavaScript object. The .files property of a file input is a File object, which needs to be properly encoded for transmission. FormData handles this encoding for you.
-                                        const a = document.getElementById(`editinputGroupFile01${catId}`).files[0];
+                                        const a = document.getElementById(`editinputGroupFile01${subcatid}`).files[0];
                                         console.log(a);
-                                        formData.append('catName', document.getElementById(`editinputcom${catId}`).value);
-                                        const name = document.getElementById(`editinputcom${catId}`).value;
+                                        formData.append('action', 'update');
+                                        formData.append('catId',data.catId)
+                                        formData.append('subcatId', document.getElementById(`editsubcatid${subcatid}`).value);
+                                        formData.append('growthPercentage', document.getElementById(`editpercentinputcon${subcatid}`).value);
+                                        formData.append('subCatName', document.getElementById(`editinputcom${subcatid}`).value);
+                                        const name = document.getElementById(`editinputcom${subcatid}`).value;
                                         console.log(name);
-                                        formData.append('catImg', document.getElementById(`editinputGroupFile01${catId}`).files[0]); // Actual file
-                                        formData.append('action', document.getElementById('editaction').value);
-                                        formData.append('catId', document.getElementById(`editcatId${catId}`).value);
-                                        const editPostResponse = await axios.post("http://stock.swiftmore.in/mobileApis/TestCURD_category.php", formData
+                                        formData.append('subCatImg', document.getElementById(`editinputGroupFile01${subcatid}`).files[0]); // Actual file
+                                        const editPostResponse = await axios.post("http://stock.swiftmore.in/mobileApis/TestCURD_subcategory.php", formData
                                         );
                                         if (editPostResponse.data) {
                                             console.log(editPostResponse.data);
-                                            location.reload();
+                                            // location.reload();
                                         }
                                     } catch (error) {
                                         console.error("Error fetching data", error.response?.data || error.message);
@@ -270,11 +291,6 @@
         </div>
     </div>
     <script>
-        const redirectToSubForm = (catId)=>{
-            console.log(catId);
-            localStorage.setItem("catId",JSON.stringify({catId}));
-            window.location.href="subcategory.php";
-        }
         const showImage = (imginputelement, imgElementid, hideimgId = 0) => {
             // console.log(imginputelement.files);
             //imginputelement.files .files is required to get the img information in object
@@ -295,8 +311,8 @@
                 hideImage.style.display = "none";
             }
         }
-        const handleDelete=async (catId,catName)=>{
-            console.log(catId,catName);
+        const handleDelete=async (subcatid,catName)=>{
+            console.log(subcatid,catName);
             const result = await Swal.fire({//wait for promise to resolve
                 title: "Are you sure?",
                 text: `You want to delete '${catName}' category!`,
@@ -309,15 +325,15 @@
             if (result.isConfirmed) {
                 try {
                     const formData = new FormData();
-                    formData.append("catId",catId);
+                    formData.append("subcatid",subcatid);
                     formData.append("action","delete");
-                    // const deletedata={catId,action:'delete'}
+                    // const deletedata={subcatid,action:'delete'}
                     const response = await axios.post("http://stock.swiftmore.in/mobileApis/TestCURD_category.php", formData);
                     if (response.data.success === 1) {
                         await Swal.fire("Deleted!", "Category has been deleted.", "success");
                         // Remove the deleted category from the DOM
-                        // $(`.sa-confirm[data-id='${catId}']`).closest(".col-md-6.col-lg-3").remove();
-                        const accessdeleteelement = document.querySelector(`.delete${catId}`);
+                        // $(`.sa-confirm[data-id='${subcatid}']`).closest(".col-md-6.col-lg-3").remove();
+                        const accessdeleteelement = document.querySelector(`.delete${subcatid}`);
                         if (accessdeleteelement) {
                         accessdeleteelement.remove();
                         }

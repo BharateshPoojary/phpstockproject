@@ -116,6 +116,7 @@
                                 // console.log(response.data);
                                 const rowcontainer = document.getElementById('categories');
                                 const { Cat } = response.data;
+                                try {
                                 Cat.forEach(cat => {
                                     //here we have to give += if given equal to it will iterate and will show only last card if given += it will append all the cards inside row container
                                     rowcontainer.innerHTML += `<div class="col-md-6 col-lg-3 delete${cat.catId}">
@@ -210,6 +211,11 @@
                                                                 </div>
                                                             </div>`
                                 });   
+                            } catch (error) {
+                                const addcategories = document.getElementById('categories');
+                                addcategories.innerHTML=`<h1 class="fw-10 fs-7 text-center">No  categories added</h1>`;
+                            
+                                }
                             } catch (error) {
                                 console.error("Error fetching data", error.response?.data || error.message);
                             }
