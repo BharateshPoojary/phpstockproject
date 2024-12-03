@@ -1,6 +1,5 @@
 <!doctype html>
 <html lang="en">
-
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -8,10 +7,9 @@
     <link rel="shortcut icon" type="image/png" href="./assets/images/logos/favicon.png" />
     <link rel="stylesheet" href="./assets/css/styles.min.css" />
 </head>
-
 <body>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script><!-- using axios -->
-
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script><!--Using sweet alert-->
     <!--  Body Wrapper -->
     <div class="page-wrapper" id="main-wrapper" data-layout="vertical" data-navbarbg="skin6" data-sidebartype="full"
         data-sidebar-position="fixed" data-header-position="fixed">
@@ -120,7 +118,7 @@
                                 const { Cat } = response.data;
                                 Cat.forEach(cat => {
                                     //here we have to give += if given equal to it will iterate and will show only last card if given += it will append all the cards inside row container
-                                    rowcontainer.innerHTML += `<div class="col-md-6 col-lg-3">
+                                    rowcontainer.innerHTML += `<div class="col-md-6 col-lg-3 delete${cat.catId}">
                                                                 <div class="card">
                                                                     <div class="card-body">
                                                                         <div class="d-flex align-items-start">
@@ -142,8 +140,7 @@
                                                                                         </li>
                                                                                         <li>
                                                                                             <a class="dropdown-item sa-confirm" href="javascript:void(0)"
-                                                                                                data-id=""
-                                                                                                data-catname="">Delete</a>
+                                                                                                onClick="handleDelete('${cat.catId}','${cat.catName}')">Delete</a>
                                                                                         </li>
                                                                                     </ul>
                                                                                 </div>
@@ -212,8 +209,7 @@
                                                                     </div>
                                                                 </div>
                                                             </div>`
-                                });
-                                
+                                });   
                             } catch (error) {
                                 console.error("Error fetching data", error.response?.data || error.message);
                             }
@@ -249,11 +245,9 @@
         </div>
     </div>
     <script>
-
         const showImage = (imginputelement, imgElementid, hideimgId = 0) => {
             // console.log(imginputelement.files);
             //imginputelement.files .files is required to get the img information in object
-
             const imgUrl = document.getElementById(imgElementid);
             if (imginputelement.files && imginputelement.files[0]) {
                 const filereader = new FileReader();
@@ -271,8 +265,42 @@
                 hideImage.style.display = "none";
             }
         }
+        const handleDelete=async (catId,catName)=>{
+            console.log(catId,catName);
+            const result = await Swal.fire({//wait for promise to resolve
+                title: "Are you sure?",
+                text: `You want to delete '${catName}' category!`,
+                icon: "warning",
+                showCancelButton: true,
+                confirmButtonColor: "#3085d6",
+                cancelButtonColor: "#d33",
+                confirmButtonText: "Yes, delete it!",
+            });
+            if (result.isConfirmed) {
+                try {
+                    const formData = new FormData();
+                    formData.append("catId",catId);
+                    formData.append("action","delete");
+                    // const deletedata={catId,action:'delete'}
+                    const response = await axios.post("http://stock.swiftmore.in/mobileApis/TestCURD_category.php", formData);
+                    if (response.data.success === 1) {
+                        await Swal.fire("Deleted!", "Category has been deleted.", "success");
+                        // Remove the deleted category from the DOM
+                        // $(`.sa-confirm[data-id='${catId}']`).closest(".col-md-6.col-lg-3").remove();
+                        const accessdeleteelement = document.querySelector(`.delete${catId}`);
+                        if (accessdeleteelement) {
+                        accessdeleteelement.remove();
+                        }
+                    } else {
+                        await Swal.fire("Error!", "Something went wrong. Please try again.", "error");
+                    }
+                } catch (error) {
+                    console.error("Error fetching data", error.response?.data || error.message);
+                    await Swal.fire("Error!", "Something went wrong. Please try again.", "error");
+                }
+            }
+        }
     </script>
-
     <script src="./assets/libs/jquery/dist/jquery.min.js"></script>
     <script src="./assets/libs/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="./assets/js/sidebarmenu.js"></script>
@@ -281,5 +309,4 @@
     <!-- solar icons -->
     <script src="https://cdn.jsdelivr.net/npm/iconify-icon@1.0.8/dist/iconify-icon.min.js"></script>
 </body>
-
 </html>
