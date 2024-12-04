@@ -269,8 +269,8 @@
                                         console.log(a);
                                         formData.append('action', 'update');
                                         formData.append('catId',data.catId)
-                                        formData.append('subcatId', document.getElementById(`editsubcatid${subcatid}`).value);
-                                        formData.append('growthPercentage', document.getElementById(`editpercentinputcon${subcatid}`).value);
+                                        formData.append('subCatId', document.getElementById(`editsubcatid${subcatid}`).value);
+                                        formData.append('growthPercentage', document.getElementById(`editpercentinputcom${subcatid}`).value);
                                         formData.append('subCatName', document.getElementById(`editinputcom${subcatid}`).value);
                                         const name = document.getElementById(`editinputcom${subcatid}`).value;
                                         console.log(name);
@@ -279,7 +279,7 @@
                                         );
                                         if (editPostResponse.data) {
                                             console.log(editPostResponse.data);
-                                            // location.reload();
+                                            location.reload();
                                         }
                                     } catch (error) {
                                         console.error("Error fetching data", error.response?.data || error.message);
@@ -311,11 +311,11 @@
                 hideImage.style.display = "none";
             }
         }
-        const handleDelete=async (subcatid,catName)=>{
-            console.log(subcatid,catName);
+        const handleDelete=async (subcatid,subCatName)=>{
+            console.log(subcatid,subCatName);
             const result = await Swal.fire({//wait for promise to resolve
                 title: "Are you sure?",
-                text: `You want to delete '${catName}' category!`,
+                text: `You want to delete '${subCatName}' category!`,
                 icon: "warning",
                 showCancelButton: true,
                 confirmButtonColor: "#3085d6",
@@ -325,11 +325,12 @@
             if (result.isConfirmed) {
                 try {
                     const formData = new FormData();
-                    formData.append("subcatid",subcatid);
                     formData.append("action","delete");
+                    formData.append("subCatId",subcatid);
                     // const deletedata={subcatid,action:'delete'}
-                    const response = await axios.post("http://stock.swiftmore.in/mobileApis/TestCURD_category.php", formData);
-                    if (response.data.success === 1) {
+                    const deleteresponse = await axios.post("http://stock.swiftmore.in/mobileApis/TestCURD_subcategory.php", formData);
+                    if (deleteresponse.data.success === 1) {
+                        console.log(deleteresponse.data);
                         await Swal.fire("Deleted!", "Category has been deleted.", "success");
                         // Remove the deleted category from the DOM
                         // $(`.sa-confirm[data-id='${subcatid}']`).closest(".col-md-6.col-lg-3").remove();
