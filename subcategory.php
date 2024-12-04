@@ -301,8 +301,7 @@
                 filereader.onload = (e) => {//When the file is successfully read:
                     imgUrl.style.display = "block";
                     imgUrl.src = e.target.result;
-                    // console.log(e.target.result);
-                }
+               }
             } else {
                 imgUrl.style.display = "none";
             }
