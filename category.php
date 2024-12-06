@@ -10,7 +10,7 @@
 <body>
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script><!-- using axios -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script><!--Using sweet alert-->
-    <!--  Body Wrapper -->
+    <!--  Body Wrapper -->  
     <div class="page-wrapper" id="main-wrapper" data-layout="vertical" data-navbarbg="skin6" data-sidebartype="full"
         data-sidebar-position="fixed" data-header-position="fixed">
         <?php include "sidebar.php"?>
@@ -123,7 +123,7 @@
                                                                 <div class="card">
                                                                     <div class="card-body">
                                                                         <div class="d-flex align-items-start">
-                                                                            <div class="bg-warning-subtle text-warning d-inline-block px-4 py-3 rounded " onClick="redirectToSubForm(${cat.catId})">
+                                                                            <div class="bg-warning-subtle text-warning d-inline-block px-4 py-3 rounded " onClick="redirectToSubCat(${cat.catId})">
                                                                                 <img src="${cat.catImg}" class="rounded img-fluid">
                                                                             </div>
                                                                             <div class="ms-auto">
@@ -251,7 +251,7 @@
         </div>
     </div>
     <script>
-        const redirectToSubForm = (catId)=>{
+        const redirectToSubCat = (catId)=>{
             console.log(catId);
             localStorage.setItem("catId",JSON.stringify({catId}));
             window.location.href="subcategory.php";

@@ -95,13 +95,13 @@
                                         const handleFormSubmit = async (e) => {
                                             try {
                                                 e.preventDefault();
-                                                const data = JSON.parse(localStorage.getItem('subcatid'));
-                                                console.log(data.subcatid);
+                                                const data = JSON.parse(localStorage.getItem('catId'));
+                                                console.log(data.catId);
                                                 const formData = new FormData();//It is optional but recommended when including files in a request 
                                                 //When dealing with file uploads (<input type="file">), you cannot directly store the file in a plain JavaScript object. The .files property of a file input is a File object, which needs to be properly encoded for transmission. FormData handles this encoding for you.
                                                 const a = document.getElementById('inputGroupFile01').files[0];
                                                 console.log(a);
-                                                formData.append('subcatid',data.subcatid);
+                                                formData.append('catId',data.catId);
                                                 formData.append('subCatName', document.getElementById('subcatinput').value);
                                                 formData.append('subCatImg', document.getElementById('inputGroupFile01').files[0]); // Actual file
                                                 formData.append('growthPercentage', document.getElementById('growthPercentage').value);
@@ -164,8 +164,10 @@
                                                                             </div>
                                                                         </div>
                                                                         <div class="mt-5">
+                                                                         <div class="d-flex justify-content-between align-items-center">
                                                                             <h4 class="card-title">${subcat.subCatName}</h4>
                                                                             <h6 class="text-muted">${subcat.growthPercentage} %</h6>
+                                                                            </div>
                                                                         </div>
                                                                     </div>
                                                                 </div>
